@@ -14,6 +14,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ingredients = await storage.getAllIngredients();
       res.json(ingredients);
     } catch (error) {
+      console.error("Error retrieving ingredients:", error);
       res.status(500).json({ message: "Failed to retrieve ingredients" });
     }
   });
@@ -38,7 +39,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ingredients", async (req, res) => {
     try {
       console.log("POST /api/ingredients request body:", JSON.stringify(req.body));
-      const validatedData = insertIngredientSchema.parse(req.body);
+      
+      // Manual data transformation for expiryDate
+      const data = { ...req.body };
+      if (data.expiryDate) {
+        data.expiryDate = new Date(data.expiryDate);
+      }
+      
+      const validatedData = insertIngredientSchema.parse(data);
       console.log("Validated data:", JSON.stringify(validatedData));
       const ingredient = await storage.createIngredient(validatedData);
       res.status(201).json(ingredient);
@@ -56,7 +64,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/ingredients/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const validatedData = insertIngredientSchema.parse(req.body);
+      
+      // Manual data transformation for expiryDate
+      const data = { ...req.body };
+      if (data.expiryDate) {
+        data.expiryDate = new Date(data.expiryDate);
+      }
+      
+      console.log("PATCH /api/ingredients/:id request body:", JSON.stringify(data));
+      const validatedData = insertIngredientSchema.parse(data);
       const updatedIngredient = await storage.updateIngredient(id, validatedData);
       
       if (!updatedIngredient) {
@@ -66,8 +82,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedIngredient);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation error:", JSON.stringify(error.errors));
         return res.status(400).json({ message: error.errors });
       }
+      console.error("Update error:", error);
       res.status(500).json({ message: "Failed to update ingredient" });
     }
   });

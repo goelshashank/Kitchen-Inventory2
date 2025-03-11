@@ -33,16 +33,18 @@ interface IngredientFormProps {
 }
 
 // Add validation to schema
-const validationSchema = insertIngredientSchema.extend({
-  expiryDate: z.string().optional().transform(val => val ? val : null),
+const validationSchema = z.object({
   name: z.string().min(2, {
     message: "Name must be at least 2 characters."
   }),
   quantity: z.coerce.number().positive({
     message: "Quantity must be greater than 0."
   }),
-  minimumStock: z.coerce.number().nonnegative().optional(),
-  notes: z.string().optional(),
+  unit: z.enum(UNITS),
+  category: z.enum(INGREDIENT_CATEGORIES),
+  expiryDate: z.string().optional().transform(val => val ? val : null),
+  minimumStock: z.coerce.number().nonnegative().optional().nullable(),
+  notes: z.string().optional().nullable(),
 });
 
 export default function IngredientForm({ ingredient, mode }: IngredientFormProps) {

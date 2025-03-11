@@ -48,9 +48,10 @@ export const ingredientsRelations = relations(ingredients, ({ many }) => ({
   recipeIngredients: many(recipeIngredients)
 }));
 
-export const insertIngredientSchema = createInsertSchema(ingredients).omit({
-  id: true,
-});
+export const insertIngredientSchema = createInsertSchema(ingredients)
+  .omit({
+    id: true,
+  });
 
 // Recipes table
 export const recipes = pgTable("recipes", {
