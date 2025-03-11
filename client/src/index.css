@@ -47,7 +47,9 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-[#dee2e6] p-6 hover:shadow-md transition-shadow duration-300;
+    @apply bg-white rounded-2xl shadow-sm border border-[#dee2e6] p-6 
+    hover:shadow-md transition-all duration-300 
+    hover:translate-y-[-2px] overflow-hidden;
   }
 
   .nav-link {
@@ -55,9 +57,9 @@
   }
 
   .btn {
-    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors 
-    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring px-4 py-2
-    disabled:pointer-events-none disabled:opacity-50 text-sm;
+    @apply inline-flex items-center justify-center rounded-full font-medium transition-colors 
+    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring px-5 py-2.5
+    disabled:pointer-events-none disabled:opacity-50 text-sm shadow-sm;
   }
 
   .btn-primary {
@@ -89,9 +91,9 @@
   }
 
   .form-control {
-    @apply rounded-md border border-[#dee2e6] px-3 py-2 text-sm 
+    @apply rounded-xl border border-[#dee2e6] px-4 py-3 text-sm 
     focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-aprycot-primary
-    focus-visible:border-aprycot-primary;
+    focus-visible:border-aprycot-primary transition-all duration-200;
   }
 
   .badge {
@@ -120,7 +122,7 @@
 
   /* Table styles */
   .table-container {
-    @apply w-full overflow-auto rounded-md border border-[#dee2e6];
+    @apply w-full overflow-hidden rounded-2xl border border-[#dee2e6] shadow-sm;
   }
 
   .table {
@@ -128,14 +130,14 @@
   }
 
   .table-header {
-    @apply bg-aprycot-background text-xs uppercase text-aprycot-heading;
+    @apply bg-aprycot-background text-xs uppercase text-aprycot-heading font-semibold;
   }
 
   .table-row {
-    @apply border-b border-[#dee2e6] hover:bg-aprycot-background/50;
+    @apply border-b border-[#dee2e6] hover:bg-aprycot-background/50 transition-colors duration-150;
   }
 
   .table-cell {
-    @apply px-4 py-3;
+    @apply px-5 py-4;
   }
 }
