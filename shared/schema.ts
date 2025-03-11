@@ -40,6 +40,8 @@ export const ingredients = pgTable("ingredients", {
   category: text("category").notNull().$type<typeof INGREDIENT_CATEGORIES[number]>(),
   expiryDate: timestamp("expiry_date"),
   minimumStock: real("minimum_stock"),
+  skuQuantity: real("sku_quantity"),
+  skuCost: real("sku_cost"),
   notes: text("notes"),
 });
 

@@ -44,6 +44,8 @@ const validationSchema = z.object({
   category: z.enum(INGREDIENT_CATEGORIES),
   expiryDate: z.string().optional().transform(val => val ? val : null),
   minimumStock: z.coerce.number().nonnegative().optional().nullable(),
+  skuQuantity: z.coerce.number().nonnegative().optional().nullable(),
+  skuCost: z.coerce.number().nonnegative().optional().nullable(),
   notes: z.string().optional().nullable(),
 });
 
@@ -61,6 +63,8 @@ export default function IngredientForm({ ingredient, mode }: IngredientFormProps
       category: ingredient?.category || "other",
       expiryDate: ingredient?.expiryDate ? new Date(ingredient.expiryDate).toISOString().split('T')[0] : "",
       minimumStock: ingredient?.minimumStock || 0,
+      skuQuantity: ingredient?.skuQuantity || 0,
+      skuCost: ingredient?.skuCost || 0,
       notes: ingredient?.notes || "",
     },
   });
@@ -224,6 +228,50 @@ export default function IngredientForm({ ingredient, mode }: IngredientFormProps
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="skuQuantity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>SKU Quantity</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="0" 
+                        step="1" 
+                        {...field} 
+                        value={field.value || ""} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <p className="text-xs text-muted-foreground">Number of units per SKU package</p>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="skuCost"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>SKU Cost</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="number" 
+                        min="0" 
+                        step="0.01" 
+                        {...field} 
+                        value={field.value || ""} 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    <p className="text-xs text-muted-foreground">Cost per SKU package</p>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
