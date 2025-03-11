@@ -44,6 +44,20 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Aprycot theme colors
+        aprycot: {
+          primary: "#EA6A12",
+          secondary: "#959895",
+          success: "#3BB77E",
+          info: "#12CDEA",
+          warning: "#EAB012",
+          danger: "#EA1212",
+          light: "#dee2e6",
+          dark: "#212529",
+          heading: "#07143B",
+          body: "#959895",
+          background: "#faf9f5",
+        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
