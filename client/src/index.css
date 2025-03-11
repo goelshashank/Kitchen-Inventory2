@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css?family=Poppins:400");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 @tailwind base;
@@ -6,55 +6,136 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
-    @apply font-sans antialiased bg-[#faf9f5] text-[#959895];
+    @apply font-sans antialiased bg-aprycot-background text-aprycot-body;
     font-family: 'Poppins', sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Playfair Display', serif;
-    @apply font-bold text-[#07143B] leading-tight;
+    @apply font-bold text-aprycot-heading leading-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl;
   }
 
   a {
-    @apply text-primary hover:text-primary/90;
+    @apply text-aprycot-primary hover:text-aprycot-primary/90 transition-colors duration-200;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-[#dee2e6];
+    @apply bg-white rounded-lg shadow-sm border border-[#dee2e6] p-6 hover:shadow-md transition-shadow duration-300;
   }
 
   .nav-link {
-    @apply text-[#07143B] hover:text-primary transition-colors;
+    @apply text-aprycot-heading hover:text-aprycot-primary transition-colors duration-200;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md font-medium transition-colors 
+    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring px-4 py-2
+    disabled:pointer-events-none disabled:opacity-50 text-sm;
   }
 
   .btn-primary {
-    @apply bg-primary text-white hover:bg-primary/90;
+    @apply btn bg-aprycot-primary text-white hover:bg-aprycot-primary/90;
   }
 
   .btn-success {
-    @apply bg-[#3BB77E] text-white hover:bg-[#3BB77E]/90;
+    @apply btn bg-aprycot-success text-white hover:bg-aprycot-success/90;
   }
 
   .btn-warning {
-    @apply bg-[#EAB012] text-white hover:bg-[#EAB012]/90;
+    @apply btn bg-aprycot-warning text-white hover:bg-aprycot-warning/90;
   }
 
   .btn-danger {
-    @apply bg-[#EA1212] text-white hover:bg-[#EA1212]/90;
+    @apply btn bg-aprycot-danger text-white hover:bg-aprycot-danger/90;
   }
 
   .btn-info {
-    @apply bg-[#12CDEA] text-white hover:bg-[#12CDEA]/90;
+    @apply btn bg-aprycot-info text-white hover:bg-aprycot-info/90;
+  }
+
+  .btn-outline {
+    @apply btn border border-aprycot-primary text-aprycot-primary hover:bg-aprycot-primary hover:text-white;
+  }
+
+  .btn-ghost {
+    @apply btn hover:bg-aprycot-background text-aprycot-heading hover:text-aprycot-primary;
   }
 
   .form-control {
-    @apply border-[#dee2e6] rounded focus:border-primary focus:ring-1 focus:ring-primary;
+    @apply rounded-md border border-[#dee2e6] px-3 py-2 text-sm 
+    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-aprycot-primary
+    focus-visible:border-aprycot-primary;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold;
+  }
+
+  .badge-primary {
+    @apply badge bg-aprycot-primary text-white;
+  }
+
+  .badge-success {
+    @apply badge bg-aprycot-success text-white;
+  }
+
+  .badge-warning {
+    @apply badge bg-aprycot-warning text-white;
+  }
+  
+  .badge-danger {
+    @apply badge bg-aprycot-danger text-white;
+  }
+
+  .badge-outline {
+    @apply badge bg-transparent border border-current;
+  }
+
+  /* Table styles */
+  .table-container {
+    @apply w-full overflow-auto rounded-md border border-[#dee2e6];
+  }
+
+  .table {
+    @apply w-full text-sm text-left text-aprycot-body;
+  }
+
+  .table-header {
+    @apply bg-aprycot-background text-xs uppercase text-aprycot-heading;
+  }
+
+  .table-row {
+    @apply border-b border-[#dee2e6] hover:bg-aprycot-background/50;
+  }
+
+  .table-cell {
+    @apply px-4 py-3;
   }
 }
