@@ -1,6 +1,7 @@
 import { pgTable, text, serial, integer, boolean, timestamp, foreignKey, primaryKey, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Categories for ingredients
 export const INGREDIENT_CATEGORIES = [
@@ -42,6 +43,11 @@ export const ingredients = pgTable("ingredients", {
   notes: text("notes"),
 });
 
+// Explicit relations for ingredients
+export const ingredientsRelations = relations(ingredients, ({ many }) => ({
+  recipeIngredients: many(recipeIngredients)
+}));
+
 export const insertIngredientSchema = createInsertSchema(ingredients).omit({
   id: true,
 });
@@ -55,6 +61,11 @@ export const recipes = pgTable("recipes", {
   image: text("image"),
   notes: text("notes"),
 });
+
+// Explicit relations for recipes
+export const recipesRelations = relations(recipes, ({ many }) => ({
+  recipeIngredients: many(recipeIngredients)
+}));
 
 export const insertRecipeSchema = createInsertSchema(recipes).omit({
   id: true,
@@ -71,6 +82,18 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
     pk: primaryKey(table.recipeId, table.ingredientId),
   };
 });
+
+// Explicit relations for recipe ingredients
+export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
+  recipe: one(recipes, {
+    fields: [recipeIngredients.recipeId],
+    references: [recipes.id]
+  }),
+  ingredient: one(ingredients, {
+    fields: [recipeIngredients.ingredientId],
+    references: [ingredients.id]
+  })
+}));
 
 export const insertRecipeIngredientSchema = createInsertSchema(recipeIngredients);
 
