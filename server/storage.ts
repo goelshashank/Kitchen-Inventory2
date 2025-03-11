@@ -5,13 +5,11 @@ import {
   type InsertRecipe,
   type RecipeIngredient,
   type RecipeWithIngredients,
-  ingredients,
-  recipes,
-  recipeIngredients,
   UNITS
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, inArray } from "drizzle-orm";
+import * as schema from "@shared/schema";
 
 export interface IStorage {
   // Ingredients
@@ -38,64 +36,64 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // Ingredients methods
   async getIngredient(id: number): Promise<Ingredient | undefined> {
-    const [ingredient] = await db.select().from(ingredients).where(eq(ingredients.id, id));
+    const [ingredient] = await db.select().from(schema.ingredients).where(eq(schema.ingredients.id, id));
     return ingredient || undefined;
   }
 
   async getAllIngredients(): Promise<Ingredient[]> {
-    return await db.select().from(ingredients);
+    return await db.select().from(schema.ingredients);
   }
 
   async createIngredient(ingredient: InsertIngredient): Promise<Ingredient> {
-    const [newIngredient] = await db.insert(ingredients)
+    const [newIngredient] = await db.insert(schema.ingredients)
       .values(ingredient)
       .returning();
     return newIngredient;
   }
 
   async updateIngredient(id: number, ingredient: InsertIngredient): Promise<Ingredient | undefined> {
-    const [updatedIngredient] = await db.update(ingredients)
+    const [updatedIngredient] = await db.update(schema.ingredients)
       .set(ingredient)
-      .where(eq(ingredients.id, id))
+      .where(eq(schema.ingredients.id, id))
       .returning();
     return updatedIngredient || undefined;
   }
 
   async deleteIngredient(id: number): Promise<boolean> {
-    const [deleted] = await db.delete(ingredients)
-      .where(eq(ingredients.id, id))
+    const [deleted] = await db.delete(schema.ingredients)
+      .where(eq(schema.ingredients.id, id))
       .returning();
     return !!deleted;
   }
 
   // Recipes methods
   async getRecipe(id: number): Promise<Recipe | undefined> {
-    const [recipe] = await db.select().from(recipes).where(eq(recipes.id, id));
+    const [recipe] = await db.select().from(schema.recipes).where(eq(schema.recipes.id, id));
     return recipe || undefined;
   }
 
   async getAllRecipes(): Promise<Recipe[]> {
-    return await db.select().from(recipes);
+    return await db.select().from(schema.recipes);
   }
 
   async createRecipe(recipe: InsertRecipe): Promise<Recipe> {
-    const [newRecipe] = await db.insert(recipes)
+    const [newRecipe] = await db.insert(schema.recipes)
       .values(recipe)
       .returning();
     return newRecipe;
   }
 
   async updateRecipe(id: number, recipe: InsertRecipe): Promise<Recipe | undefined> {
-    const [updatedRecipe] = await db.update(recipes)
+    const [updatedRecipe] = await db.update(schema.recipes)
       .set(recipe)
-      .where(eq(recipes.id, id))
+      .where(eq(schema.recipes.id, id))
       .returning();
     return updatedRecipe || undefined;
   }
 
   async deleteRecipe(id: number): Promise<boolean> {
-    const [deleted] = await db.delete(recipes)
-      .where(eq(recipes.id, id))
+    const [deleted] = await db.delete(schema.recipes)
+      .where(eq(schema.recipes.id, id))
       .returning();
     return !!deleted;
   }
@@ -108,8 +106,8 @@ export class DatabaseStorage implements IStorage {
 
     // Then, get all recipe ingredients for this recipe
     const recipeIngredientsData = await db.select()
-      .from(recipeIngredients)
-      .where(eq(recipeIngredients.recipeId, id));
+      .from(schema.recipeIngredients)
+      .where(eq(schema.recipeIngredients.recipeId, id));
 
     if (recipeIngredientsData.length === 0) {
       return { ...recipe, ingredients: [] };
@@ -120,8 +118,8 @@ export class DatabaseStorage implements IStorage {
     
     // Fetch all ingredients in one query
     const ingredientsData = await db.select()
-      .from(ingredients)
-      .where(inArray(ingredients.id, ingredientIds));
+      .from(schema.ingredients)
+      .where(inArray(schema.ingredients.id, ingredientIds));
     
     // Map ingredients to recipe ingredients
     const recipeIngredientsMapped = recipeIngredientsData.map(ri => {
@@ -144,7 +142,7 @@ export class DatabaseStorage implements IStorage {
     const allRecipes = await this.getAllRecipes();
     
     // Get all recipe ingredients
-    const allRecipeIngredients = await db.select().from(recipeIngredients);
+    const allRecipeIngredients = await db.select().from(schema.recipeIngredients);
     
     // Get all ingredients
     const allIngredients = await this.getAllIngredients();
@@ -178,7 +176,7 @@ export class DatabaseStorage implements IStorage {
     }
     
     // Add each ingredient to the recipe
-    const newRecipeIngredients = await db.insert(recipeIngredients)
+    const newRecipeIngredients = await db.insert(schema.recipeIngredients)
       .values(
         ingredientsToAdd.map(item => ({
           recipeId,
@@ -200,8 +198,8 @@ export class DatabaseStorage implements IStorage {
     }
     
     // First, delete all existing ingredients for this recipe
-    await db.delete(recipeIngredients)
-      .where(eq(recipeIngredients.recipeId, recipeId));
+    await db.delete(schema.recipeIngredients)
+      .where(eq(schema.recipeIngredients.recipeId, recipeId));
     
     // If there are no new ingredients to add, return empty array
     if (ingredientsToUpdate.length === 0) {

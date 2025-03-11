@@ -37,13 +37,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create ingredient
   app.post("/api/ingredients", async (req, res) => {
     try {
+      console.log("POST /api/ingredients request body:", JSON.stringify(req.body));
       const validatedData = insertIngredientSchema.parse(req.body);
+      console.log("Validated data:", JSON.stringify(validatedData));
       const ingredient = await storage.createIngredient(validatedData);
       res.status(201).json(ingredient);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation error:", JSON.stringify(error.errors));
         return res.status(400).json({ message: error.errors });
       }
+      console.error("Server error:", error);
       res.status(500).json({ message: "Failed to create ingredient" });
     }
   });
