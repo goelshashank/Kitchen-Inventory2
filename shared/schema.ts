@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
-// Categories for ingredients
+// Constants for ingredient categories and units
 export const INGREDIENT_CATEGORIES = [
   "dairy",
   "produce",
@@ -17,7 +17,6 @@ export const INGREDIENT_CATEGORIES = [
   "other"
 ] as const;
 
-// Units for measurement
 export const UNITS = [
   "g",
   "kg",
@@ -31,9 +30,19 @@ export const UNITS = [
   "lb"
 ] as const;
 
-// Ingredients table
+// Database tables
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  googleId: text("google_id").notNull().unique(),
+  email: text("email").notNull(),
+  name: text("name").notNull(),
+  avatar: text("avatar"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const ingredients = pgTable("ingredients", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   quantity: real("quantity").notNull(),
   unit: text("unit").notNull().$type<typeof UNITS[number]>(),
@@ -45,19 +54,9 @@ export const ingredients = pgTable("ingredients", {
   notes: text("notes"),
 });
 
-// Explicit relations for ingredients
-export const ingredientsRelations = relations(ingredients, ({ many }) => ({
-  recipeIngredients: many(recipeIngredients)
-}));
-
-export const insertIngredientSchema = createInsertSchema(ingredients)
-  .omit({
-    id: true,
-  });
-
-// Recipes table
 export const recipes = pgTable("recipes", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   cookTime: integer("cook_time").notNull(), // in minutes
   instructions: text("instructions").notNull(),
@@ -65,16 +64,6 @@ export const recipes = pgTable("recipes", {
   notes: text("notes"),
 });
 
-// Explicit relations for recipes
-export const recipesRelations = relations(recipes, ({ many }) => ({
-  recipeIngredients: many(recipeIngredients)
-}));
-
-export const insertRecipeSchema = createInsertSchema(recipes).omit({
-  id: true,
-});
-
-// Many-to-many relationship between recipes and ingredients with quantities
 export const recipeIngredients = pgTable("recipe_ingredients", {
   recipeId: integer("recipe_id").notNull().references(() => recipes.id, { onDelete: "cascade" }),
   ingredientId: integer("ingredient_id").notNull().references(() => ingredients.id, { onDelete: "cascade" }),
@@ -86,7 +75,28 @@ export const recipeIngredients = pgTable("recipe_ingredients", {
   };
 });
 
-// Explicit relations for recipe ingredients
+// Table relations
+export const usersRelations = relations(users, ({ many }) => ({
+  ingredients: many(ingredients),
+  recipes: many(recipes),
+}));
+
+export const ingredientsRelations = relations(ingredients, ({ many, one }) => ({
+  recipeIngredients: many(recipeIngredients),
+  user: one(users, {
+    fields: [ingredients.userId],
+    references: [users.id],
+  }),
+}));
+
+export const recipesRelations = relations(recipes, ({ many, one }) => ({
+  recipeIngredients: many(recipeIngredients),
+  user: one(users, {
+    fields: [recipes.userId],
+    references: [users.id],
+  }),
+}));
+
 export const recipeIngredientsRelations = relations(recipeIngredients, ({ one }) => ({
   recipe: one(recipes, {
     fields: [recipeIngredients.recipeId],
@@ -98,9 +108,24 @@ export const recipeIngredientsRelations = relations(recipeIngredients, ({ one })
   })
 }));
 
+// Insert schemas
+export const insertIngredientSchema = createInsertSchema(ingredients)
+  .omit({
+    id: true,
+    userId: true,
+  });
+
+export const insertRecipeSchema = createInsertSchema(recipes).omit({
+  id: true,
+  userId: true,
+});
+
 export const insertRecipeIngredientSchema = createInsertSchema(recipeIngredients);
 
 // Type definitions
+export type User = typeof users.$inferSelect;
+export type InsertUser = typeof users.$inferInsert;
+
 export type Ingredient = typeof ingredients.$inferSelect;
 export type InsertIngredient = z.infer<typeof insertIngredientSchema>;
 
@@ -110,12 +135,11 @@ export type InsertRecipe = z.infer<typeof insertRecipeSchema>;
 export type RecipeIngredient = typeof recipeIngredients.$inferSelect;
 export type InsertRecipeIngredient = z.infer<typeof insertRecipeIngredientSchema>;
 
-// Extended Recipe with ingredients
 export type RecipeWithIngredients = Recipe & {
   ingredients: (RecipeIngredient & { ingredient: Ingredient })[];
 };
 
-// Category label mapping for UI display
+// UI display mappings
 export const CATEGORY_LABELS: Record<typeof INGREDIENT_CATEGORIES[number], string> = {
   dairy: "Dairy",
   produce: "Produce",
@@ -129,7 +153,6 @@ export const CATEGORY_LABELS: Record<typeof INGREDIENT_CATEGORIES[number], strin
   other: "Other"
 };
 
-// Unit label mapping for UI display
 export const UNIT_LABELS: Record<typeof UNITS[number], string> = {
   g: "grams (g)",
   kg: "kilograms (kg)",
