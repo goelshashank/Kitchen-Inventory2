@@ -268,7 +268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ).length;
       
       // Generate alerts
-      const alerts = [];
+      const alerts: Array<{ type: 'danger' | 'warning', message: string }> = [];
       
       // Add expiring soon alerts
       ingredients
